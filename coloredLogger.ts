@@ -21,5 +21,31 @@ export const coloredLogger = {
     newConsole.timeEnd = (label?: string) => console.timeEnd(`[${name}] ${label}`);
 
     return newConsole;
+  },
+  
+  /**
+   * Creates a fancy colored logger ot route through. Uses the the name to create a HEX color.
+   * @param name The name of the logger, usually the file or component name
+   * @example
+   *  private console: Console = mcLogger.getConsole(this.constructor.name);
+   *  this.console.debug('Your message');
+   */
+  getConsoleWithAutoColor(name: string): Console {
+    // Convert the name into a hex string
+    let textEncoder = new TextEncoder();
+    let utf8ByteArray = textEncoder.encode(name);
+    let hexString = this.toHexString(utf8ByteArray);
+    // The hexString will be too long for a valid color, so we take the first 6 characters after '0x', and put a '#' at the front
+    let trimmedHexString = `#${hexString.substring(2, 8)}`;
+
+    return this.getConsole(name, trimmedHexString);
+  },
+
+  toHexString(byteArray: Uint8Array) {
+    var s = '0x';
+    byteArray.forEach(function(byte) {
+      s += ('0' + (byte & 0xFF).toString(16)).slice(-2);
+    });
+    return s;
   }
 }
